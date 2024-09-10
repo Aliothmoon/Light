@@ -12,5 +12,7 @@ private val log = LoggerFactory.getLogger("InfoKt")
 
 fun info(): List<Course> {
     val future = executor.value.submit(::jsonCourseInfoList)
-    return courseInfoList() + future.get()
+    return ArrayList<Course>(courseInfoList()).also {
+        it.addAll(future.get())
+    }
 }

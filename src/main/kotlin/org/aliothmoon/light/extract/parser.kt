@@ -31,10 +31,18 @@ private fun pretreatment(): Triple<Int, String, List<List<String>>> {
     val children = doc.children()
 //  If need
 //        val tags = children.first()!!.children().take(5).map { it.text() }.toString()
+    val content = when {
+        children.size > 1 -> {
+            children.stream().skip(1).map { h ->
+                h.children().take(5).map { it.text() }
+            }.collect(Collectors.toList())
+        }
 
-    val content = children.stream().skip(1).map { h ->
-        h.children().take(5).map { it.text() }
-    }.collect(Collectors.toList())
+        else -> {
+            emptyList()
+        }
+    }
+
 
     val parent = root.select("#myPage ul li")
 
@@ -62,6 +70,7 @@ private fun request4Experiment(url: String): Response {
 private fun content(document: Document): List<List<String>> {
     val doc = document.select(".tablelist > tbody ").last()!!
     val children = doc.children()
+    if (children.size < 2) return emptyList()
     return children.stream().skip(1).map { h ->
         h.children().take(5).map { it.text() }
     }.collect(Collectors.toList())
@@ -75,7 +84,9 @@ private fun content(document: Document): List<List<String>> {
 fun jsonCourseInfoList(): List<Course> {
 
     val (num, href, list) = pretreatment()
-
+    if (num < 2) {
+        return emptyList()
+    }
     val origin = list.stream()
 
     val surplus = (2..num).map {

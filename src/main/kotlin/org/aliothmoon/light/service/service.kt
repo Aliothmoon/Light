@@ -10,12 +10,9 @@ import org.aliothmoon.light.extract.captcha
 import org.aliothmoon.light.extract.info
 import org.aliothmoon.light.extract.login
 import org.aliothmoon.light.storage.COOKIE_STORE
-import org.aliothmoon.light.storage.COURSE_CACHE
 import org.aliothmoon.light.storage.SESSION_STORE
 import org.aliothmoon.light.utils.getCurrentUserKey
 import org.slf4j.LoggerFactory
-import org.springframework.cache.annotation.CacheEvict
-import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import javax.servlet.http.HttpServletResponse
 import javax.servlet.http.HttpSession
@@ -44,10 +41,10 @@ class Service(
         }
     }
 
-    @CacheEvict(
-        cacheNames = ["CourseInfo"],
-        key = "#no",
-    )
+    //    @CacheEvict(
+//        cacheNames = ["CourseInfo"],
+//        key = "#no",
+//    )
     fun doLogout(no: String?): R<Any> {
         val usk = getCurrentUserKey()
         COOKIE_STORE.remove(usk)
@@ -61,11 +58,11 @@ class Service(
         return captcha(resp)
     }
 
-    @Cacheable(
-        cacheNames = ["CourseInfo"],
-        key = "#no",
-        unless = "#result == null || #result.code != 0"
-    )
+    //    @Cacheable(
+//        cacheNames = ["CourseInfo"],
+//        key = "#no",
+//        unless = "#result == null || #result.code != 0"
+//    )
     fun doFetchCourseInfo(no: String?): R<List<Course>> {
         if (no == null) {
             return R<List<Course>>().apply {
@@ -76,6 +73,7 @@ class Service(
         val resp = try {
             info() to StatusCode.OK
         } catch (e: Exception) {
+            log.error("ERR", e)
             emptyList<Course>() to HAS_LOGIN
         }
         return R<List<Course>>().apply {

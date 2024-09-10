@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit
 private val FURY = Fury.builder()
     .requireClassRegistration(false)
     .withRefTracking(true)
-    .buildThreadSafeFury()
+    .buildThreadSafeFuryPool(2, 50)
 
 val FURY_SERIALIZER: Serializer<Any?> = object : Serializer<Any?> {
 
